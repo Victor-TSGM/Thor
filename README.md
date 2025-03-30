@@ -1,6 +1,6 @@
-# Construindo uma API .NET 8 com Clean Architecture, DDD, CQRS e EF Core para Gestão de Produtos e Categorias
+# Construindo uma API .NET 8 com Clean Architecture, DDD, CQRS e EF Core para Gestão de Produtos e Departamentos
 
-Este guia detalhado explora a criação de uma API .NET 8 robusta, seguindo os princípios de Clean Architecture, Domain-Driven Design (DDD), Command Query Responsibility Segregation (CQRS) e utilizando Entity Framework Core (EF Core) e MediatR. O objetivo é desenvolver um sistema que monitora um arquivo de texto, importa produtos para um banco de dados MySQL e permite a associação de produtos a categorias.
+Este guia detalhado explora a criação de uma API .NET 8 robusta, seguindo os princípios de Clean Architecture, Domain-Driven Design (DDD), Command Query Responsibility Segregation (CQRS) e utilizando Entity Framework Core (EF Core) e MediatR. O objetivo é desenvolver um sistema que monitora um arquivo de texto, importa produtos para um banco de dados MySQL e permite a associação de produtos a Departamentos.
 
 ## 1. Arquitetura da Solução
 
@@ -19,7 +19,7 @@ src/
 │   └── Exceptions/      # Exceções personalizadas
 │
 ├── Domain/              # Camada de Domínio (entidades, Value Objects e lógica de negócio)
-│   ├── Entities/        # Entidades do domínio (Produto, Categoria)
+│   ├── Entities/        # Entidades do domínio (Produto, Departamento)
 │   ├── ValueObjects/    # Value Objects (Preço, etc.)
 │   ├── Interfaces/      # Interfaces para repositórios de domínio
 │   ├── Events/          # Eventos de domínio (opcional)
@@ -44,15 +44,15 @@ src/
 ### 2.1. Domain (Domínio)
 
 - **Entities**:
-  - `Produto.cs`: Representa um produto com propriedades como `Codigo`, `Descricao`, `Preco` e uma lista de `Categorias`.
-  - `Categoria.cs`: Representa uma categoria com propriedades como `Id`, `Nome` e uma lista de `Produtos`.
+  - `Produto.cs`: Representa um produto com propriedades como `Codigo`, `Descricao`, `Preco`.
+  - `Departamento.cs`: Representa uma Departamento com propriedades como `Id`, `Nome` e uma lista de `Produtos`.
 
 - **Value Objects**:
   - `Preco.cs`: Representa o preço do produto com validações específicas.
 
 - **Interfaces**:
   - `IProdutoRepository.cs`: Define operações CRUD para a entidade Produto.
-  - `ICategoriaRepository.cs`: Define operações CRUD para a entidade Categoria.
+  - `IDepartamentoRepository.cs`: Define operações CRUD para a entidade Departamento.
 
 - **Events (Opcional)**:
   - `ProdutoImportadoEvent.cs`: Representa um evento de domínio quando um produto é importado.
@@ -64,31 +64,31 @@ src/
 
 - **Commands**:
   - `ImportarProdutosCommand.cs`: Representa o comando para importar produtos de um arquivo.
-  - `AssociarProdutoCategoriaCommand.cs`: Representa o comando para associar um produto a uma categoria.
+  - `AssociarProdutoDepartamentoCommand.cs`: Representa o comando para associar um produto a uma Departamento.
 
 - **Queries**:
   - `ObterProdutosQuery.cs`: Representa a query para obter todos os produtos.
   - `ObterProdutoPorCodigoQuery.cs`: Representa a query para obter um produto por código.
-  - `ObterCategoriasQuery.cs`: Representa a query para obter todas as categorias.
+  - `ObterDepartamentosQuery.cs`: Representa a query para obter todas as Departamentos.
 
 - **Handlers**:
   - `ImportarProdutosCommandHandler.cs`: Manipula o comando `ImportarProdutosCommand`.
-  - `AssociarProdutoCategoriaCommandHandler.cs`: Manipula o comando `AssociarProdutoCategoriaCommand`.
+  - `AssociarProdutoDepartamentoCommandHandler.cs`: Manipula o comando `AssociarProdutoDepartamentoCommand`.
   - `ObterProdutosQueryHandler.cs`: Manipula a query `ObterProdutosQuery`.
   - `ObterProdutoPorCodigoQueryHandler.cs`: Manipula a query `ObterProdutoPorCodigoQuery`.
-  - `ObterCategoriasQueryHandler.cs`: Manipula a query `ObterCategoriasQuery`.
+  - `ObterDepartamentosQueryHandler.cs`: Manipula a query `ObterDepartamentosQuery`.
 
 - **Interfaces**:
   - `IProdutoService.cs`: Define operações de serviço para a entidade Produto.
-  - `ICategoriaService.cs`: Define operações de serviço para a entidade Categoria.
+  - `IDepartamentoservice.cs`: Define operações de serviço para a entidade Departamento.
 
 - **DTOs**:
   - `ProdutoDto.cs`: Data Transfer Object para a entidade Produto.
-  - `CategoriaDto.cs`: Data Transfer Object para a entidade Categoria.
+  - `DepartamentoDto.cs`: Data Transfer Object para a entidade Departamento.
 
 - **Mappers**:
   - `ProdutoMapper.cs`: Mapeia entre Produto e ProdutoDto.
-  - `CategoriaMapper.cs`: Mapeia entre Categoria e CategoriaDto.
+  - `DepartamentoMapper.cs`: Mapeia entre Departamento e DepartamentoDto.
 
 - **Exceptions**:
   - `ProdutoNaoEncontradoException.cs`: Exceção personalizada da camada de aplicação.
@@ -98,7 +98,7 @@ src/
 - **Persistence**:
   - `AppDbContext.cs`: Contexto do EF Core para o banco de dados MySQL.
   - `ProdutoRepository.cs`: Implementação de `IProdutoRepository` usando EF Core.
-  - `CategoriaRepository.cs`: Implementação de `ICategoriaRepository` usando EF Core.
+  - `DepartamentoRepository.cs`: Implementação de `IDepartamentoRepository` usando EF Core.
 
 - **FileMonitoring**:
   - `ArquivoMonitorService.cs`: Implementa a lógica de monitoramento de arquivos e processamento de produtos.
@@ -107,19 +107,19 @@ src/
   - Serviços externos (ex: logs).
 
 - **Mappings**:
-  - Configurações de mapeamento do EF Core para as entidades Produto e Categoria.
+  - Configurações de mapeamento do EF Core para as entidades Produto e Departamento.
 
 ### 2.4. Presentation (Apresentação)
 
 - **Controllers**:
   - `ProdutoController.cs`: Controla as operações relacionadas a produtos (importação, associação, listagem).
-  - `CategoriaController.cs`: Controla as operações relacionadas a categorias (listagem).
+  - `DepartamentoController.cs`: Controla as operações relacionadas a Departamentos (listagem).
 
 - **Models**:
   - `ImportarProdutosRequest.cs`: Modelo de requisição para importar produtos.
-  - `AssociarProdutoCategoriaRequest.cs`: Modelo de requisição para associar um produto a uma categoria.
+  - `AssociarProdutoDepartamentoRequest.cs`: Modelo de requisição para associar um produto a uma Departamento.
   - `ProdutoResponse.cs`: Modelo de resposta para produtos.
-  - `CategoriaResponse.cs`: Modelo de resposta para categorias.
+  - `DepartamentoResponse.cs`: Modelo de resposta para Departamentos.
 
 - **Filters**:
   - Filtros para tratamento de erros e validações.
@@ -129,8 +129,8 @@ src/
 1. **Monitoramento de Arquivos**: O `ArquivoMonitorService` monitora o arquivo de texto em busca de novas linhas (produtos).
 2. **Importação de Produtos**: Ao detectar novas linhas, o serviço dispara o comando `ImportarProdutosCommand`, que é manipulado por `ImportarProdutosCommandHandler`.
 3. **Persistência**: O handler usa o `ProdutoRepository` para salvar os produtos no banco de dados MySQL via EF Core.
-4. **Associação de Categorias**: A API expõe um endpoint para associar produtos a categorias usando o comando `AssociarProdutoCategoriaCommand`.
-5. **Listagem de Produtos e Categorias**: A API expõe endpoints para listar produtos e categorias usando as queries `ObterProdutosQuery` e `ObterCategoriasQuery`.
+4. **Associação de Departamentos**: A API expõe um endpoint para associar produtos a Departamentos usando o comando `AssociarProdutoDepartamentoCommand`.
+5. **Listagem de Produtos e Departamentos**: A API expõe endpoints para listar produtos e Departamentos usando as queries `ObterProdutosQuery` e `ObterDepartamentosQuery`.
 6. **MediatR**: O MediatR é usado para desacoplar as camadas e facilitar a comunicação entre os controladores e os handlers de comandos e queries.
 
 ## 4. Tecnologias e Dependências
