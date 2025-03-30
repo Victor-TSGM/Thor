@@ -1,6 +1,0 @@
-@Thor_HostAddress = http://localhost:5274
-
-GET {{Thor_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
